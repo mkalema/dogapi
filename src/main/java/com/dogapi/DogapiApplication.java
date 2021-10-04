@@ -5,6 +5,7 @@ import com.dogapi.model.DogSubType;
 import com.dogapi.service.DogService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @SpringBootApplication
+@Slf4j
 public class DogapiApplication {
 
     public static void main(String[] args) {
@@ -36,9 +38,12 @@ public class DogapiApplication {
     public CommandLineRunner run(){
         return args -> {
             ObjectMapper objectMapper = new ObjectMapper();
+
+            log.info("read input data json file ");
             Resource resource = resourceLoader.getResource("classpath:data/apidata.json");
             JsonNode jsonNode = objectMapper.readTree(resource.getInputStream());
 
+            log.info("process data... ");
             Iterator<Map.Entry<String, JsonNode>> dataMap = jsonNode.fields();
 
             List<Dog> dogs = new ArrayList<>();
@@ -63,6 +68,8 @@ public class DogapiApplication {
                 // save to database
                 dogService.addDog(dog);
             }
+
+            log.info("data saved database ");
         };
     }
 }
